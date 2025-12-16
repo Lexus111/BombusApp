@@ -6,14 +6,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
-      # Установка зависимостей, чтобы наверняка
-      - name: Get Date
-        id: get-date
-        run: |
-          echo "::set-output name=date::$(date -u +'%Y%m%d')"
-          
       - name: Build with Buildozer
         uses: ArtemSBulgakov/buildozer-action@v1
         id: buildozer
@@ -22,7 +16,7 @@ jobs:
           buildozer_version: master
 
       - name: Upload APK
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: BombusPro
           path: bin/*.apk
