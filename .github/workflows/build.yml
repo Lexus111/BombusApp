@@ -5,41 +5,39 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    # ИСПОЛЬЗУЕМ СТАРУЮ СТАБИЛЬНУЮ UBUNTU
+    runs-on: ubuntu-20.04
 
     steps:
-      # 1. Скачиваем код репозитория
       - uses: actions/checkout@v4
 
-      # 2. Настраиваем Java (нужна 17 версия для новых Android SDK)
+      # ИСПОЛЬЗУЕМ JAVA 11 (Критично для ошибки 100)
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '11'
 
-      # 3. Устанавливаем системные библиотеки (без них Buildozer не соберет)
       - name: Install System Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y python3-pip build-essential git python3 \
+          sudo apt-get install -y \
+          python3-pip build-essential git python3 \
           python3-dev ffmpeg libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev \
           libsdl2-ttf-dev libportmidi-dev libswscale-dev libavformat-dev \
           libavcodec-dev zlib1g-dev libgstreamer1.0 gstreamer1.0-plugins-base \
           gstreamer1.0-plugins-good unzip autoconf libtool pkg-config \
-          libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev
+          libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev zip
 
-      # 4. Устанавливаем сам Buildozer и Cython
       - name: Install Buildozer
         run: |
           pip3 install --upgrade pip
           pip3 install --upgrade buildozer cython virtualenv
 
-      # 5. Запускаем сборку (yes | нужно, чтобы автоматически принять лицензию SDK)
+      # Запуск без "yes |", так как мы добавили accept_license в spec файл
       - name: Build APK
-        run: yes | buildozer android debug
+        run: buildozer android debug
 
-      # 6. Загружаем готовый файл
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
